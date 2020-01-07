@@ -34,8 +34,12 @@ public class Rope2D : MonoBehaviour
 
         private void MoveTo(Vector2 position)
         {
-            this.position.x = position.x - length * Mathf.Cos(angle);
-            this.position.y = position.y - length * Mathf.Sin(angle);
+            this.position = position - GetBias();
+        }
+
+        private Vector2 GetBias()
+        {
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * length;
         }
 
         public void SetPosition(Vector2 position)
@@ -48,9 +52,7 @@ public class Rope2D : MonoBehaviour
             this.position = position;
             if (child != null)
             {
-                Vector2 pos = position;
-                pos.x += length * Mathf.Cos(angle);
-                pos.y += length * Mathf.Sin(angle);
+                Vector2 pos = position + GetBias();
                 child.SetPosition(pos);
             }
         }
@@ -60,9 +62,7 @@ public class Rope2D : MonoBehaviour
             Vector2 pos = position;
             Gizmos.DrawSphere(pos, 0.1f * length);
 
-            Vector2 pos2 = pos;
-            pos2.x += length * Mathf.Cos(angle);
-            pos2.y += length * Mathf.Sin(angle);
+            Vector2 pos2 = position + GetBias();
             Gizmos.DrawLine(pos, pos2);
 
             if(parent != null)
