@@ -1,46 +1,46 @@
 ﻿using UnityEngine;
 
-public class Rope2D : MonoBehaviour
+public class Rope3D : MonoBehaviour
 {
-    private class Segment2D
+    private class Segment3D
     {
-        public Segment2D parent;
-        public Segment2D child;
-        public Vector2 position;
+        public Segment3D parent;
+        public Segment3D child;
+        public Vector3 position;
         public float length;
         public float angle;
 
-        public Segment2D(Segment2D parent, Vector2 position, float length)
+        public Segment3D(Segment3D parent, Vector3 position, float length)
         {
             this.parent = parent;
             this.position = position;
             this.length = length;
         }
 
-        public void Follow(Vector2 position)
+        public void Follow(Vector3 position)
         {
             PointAt(position);
             MoveTo(position);
-            if(parent != null)
+            if (parent != null)
             {
                 parent.Follow(this.position);
             }
         }
 
-        private void PointAt(Vector2 position)
+        private void PointAt(Vector3 position)
         {
             angle = Mathf.Atan2(position.y - this.position.y, position.x - this.position.x);
         }
 
-        private void MoveTo(Vector2 position)
+        private void MoveTo(Vector3 position)
         {
             this.position.x = position.x - length * Mathf.Cos(angle);
             this.position.y = position.y - length * Mathf.Sin(angle);
         }
 
-        public void SetPosition(Vector2 position)
+        public void SetPosition(Vector3 position)
         {
-            if(this.position == position)
+            if (this.position == position)
             {
                 return;
             }
@@ -48,7 +48,7 @@ public class Rope2D : MonoBehaviour
             this.position = position;
             if (child != null)
             {
-                Vector2 pos = position;
+                Vector3 pos = position;
                 pos.x += length * Mathf.Cos(angle);
                 pos.y += length * Mathf.Sin(angle);
                 child.SetPosition(pos);
@@ -57,15 +57,15 @@ public class Rope2D : MonoBehaviour
 
         public void Draw()
         {
-            Vector2 pos = position;
+            Vector3 pos = position;
             Gizmos.DrawSphere(pos, 0.1f * length);
 
-            Vector2 pos2 = pos;
+            Vector3 pos2 = pos;
             pos2.x += length * Mathf.Cos(angle);
             pos2.y += length * Mathf.Sin(angle);
             Gizmos.DrawLine(pos, pos2);
 
-            if(parent != null)
+            if (parent != null)
             {
                 parent.Draw();
             }
@@ -78,20 +78,20 @@ public class Rope2D : MonoBehaviour
     public bool fixedStart = false;
     public int segmentCount = 150;
     public float segmentLength = 0.1f;
-    private Segment2D[] m_segments;
+    private Segment3D[] m_segments;
 
     private void Awake()
     {
-        m_segments = new Segment2D[segmentCount];
-        for(int i = 0; i < segmentCount; i++)
+        m_segments = new Segment3D[segmentCount];
+        for (int i = 0; i < segmentCount; i++)
         {
-            if(i == 0)
+            if (i == 0)
             {
-                m_segments[i] = new Segment2D(null, startTransform.position, segmentLength);
+                m_segments[i] = new Segment3D(null, startTransform.position, segmentLength);
             }
             else
             {
-                m_segments[i] = new Segment2D(m_segments[i - 1], Vector2.zero, segmentLength);
+                m_segments[i] = new Segment3D(m_segments[i - 1], Vector3.zero, segmentLength);
             }
         }
 
@@ -103,14 +103,14 @@ public class Rope2D : MonoBehaviour
 
     private void Update()
     {
-        if(followMousePosition)
+        if (followMousePosition)
         {
             targetTransform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
-        
+
         m_segments[segmentCount - 1].Follow(targetTransform.position);
 
-        if(fixedStart)
+        if (fixedStart)
         {
             m_segments[0].SetPosition(startTransform.position);
         }
@@ -118,17 +118,17 @@ public class Rope2D : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(!enabled)
+        if (!enabled)
         {
             return;
         }
 
-        if(m_segments == null || m_segments.Length == 0)
+        if (m_segments == null || m_segments.Length == 0)
         {
             return;
         }
 
-        if(startTransform)
+        if (startTransform)
         {
             Gizmos.DrawSphere(startTransform.position, 0.1f);
         }
