@@ -21,6 +21,11 @@ public class RopeProcedural : MonoBehaviour
     private Vector3 m_localStartPosition;
     private Vector3 m_localEndPosition;
 
+    private void OnValidate()
+    {
+        UpdateMesh();
+    }
+
     private void Update()
     {
         if(!m_updateEveryFrame)
@@ -28,17 +33,18 @@ public class RopeProcedural : MonoBehaviour
             return;
         }
 
-        if (m_startTransform != null &&
-            m_endTransform != null &&
-            (m_startPosition != m_startTransform.position || m_endPosition != m_endTransform.position))
-        {
-            UpdateMesh();
-        }
+        UpdateMesh();
     }
 
     private void UpdateMesh()
     {
-        if(m_meshFilter == null)
+        if (m_startTransform == null ||
+            m_endTransform == null)
+        {
+            return;
+        }
+
+        if (m_meshFilter == null)
         {
             m_meshFilter = GetComponent<MeshFilter>();
         }
